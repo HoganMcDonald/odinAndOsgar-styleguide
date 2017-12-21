@@ -26,5 +26,8 @@
     "install": "^0.10.2",
     "npm": "^5.6.0",
     "run-sequence": "^2.2.0"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1"
   }
 }

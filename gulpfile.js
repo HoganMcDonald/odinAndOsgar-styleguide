@@ -103,9 +103,9 @@ gulp.task('browserSync', ()=> {
     },
     startPath: "./src/index.html"
   });
-  gulp.watch('./src/sass/*.sass', ['styles']);
-  gulp.watch('./src/index.html').on('change', browserSync.reload);
-  gulp.watch('./src/scripts/**/*.js', ['scripts']);
+  gulp.watch('src/sass/*.sass', ['styles']);
+  gulp.watch('src/index.html').on('change', browserSync.reload);
+  gulp.watch('src/scripts/**/*.js', ['scripts']);
   gulp.watch('src/assets/**/*', ['images']).on('change', browserSync.reload);
 });
 
