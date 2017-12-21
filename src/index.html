@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-  <head>
+  <head ng-app="myApp">
     <meta charset="utf-8">
     <title>Odin & Osgar Styleguide</title>
     <link rel="stylesheet" href="/public/main.min.css">
   </head>
-  <body>
+  <body ng-controller="mainController" ng-init="ready()">
 
     <header>
       <img class="logo" src="/public/assets/icons/logo.svg" alt="Logo">
@@ -21,6 +21,7 @@
       </div>
     </main>
 
+    <script src="/public/vendors.min.js" charset="utf-8"></script>
     <script src="/public/bundle.min.js" charset="utf-8"></script>
   </body>
 </html>

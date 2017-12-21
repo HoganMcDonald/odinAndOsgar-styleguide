@@ -1,5 +1,5 @@
 /*
-npm install gulp gulp-autoprefixer gulp-clean-css gulp-rename gulp-htmlmin browser-sync run-sequence gulp-sass del gulp-imagemin gulp-concat npm install gulp-sourcemaps gulp-babel babel-preset-env babel-core --save-dev
+npm install gulp gulp-autoprefixer gulp-clean-css gulp-rename gulp-htmlmin browser-sync run-sequence gulp-sass del gulp-uglify gulp-imagemin gulp-concat npm install gulp-sourcemaps gulp-babel babel-preset-env babel-core --save-dev
 */
 
 // dependencies
@@ -15,6 +15,7 @@ const gulp = require('gulp'),
   concat = require('gulp-concat'),
   babel = require('gulp-babel'),
   sourcemaps = require('gulp-sourcemaps'),
+  uglify = require('gulp-uglify'),
   sass = require('gulp-sass');
 
 /*
@@ -59,13 +60,23 @@ gulp.task('html', ()=> {
 });
 
 gulp.task('scripts', ()=> {
-  return gulp.src(['src/scripts/vendors/*.js', 'src/scripts/main.js', 'src/scripts/modules/*.js'])
+  return gulp.src(['src/scripts/main.js', 'src/scripts/modules/*.js'])
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['env']
     }))
     .pipe(concat('bundle.min.js'))
+    .pipe(uglify())
     .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('./public'))
+    .pipe(browserSync.reload({
+      stream: true
+    }));
+})
+
+gulp.task('vendors', ()=> {
+  return gulp.src(['src/scripts/vendors/*.js'])
+    .pipe(concat('vendors.min.js'))
     .pipe(gulp.dest('./public'))
     .pipe(browserSync.reload({
       stream: true
@@ -92,7 +103,7 @@ gulp.task('clean-public', ()=>{
 
 gulp.task('build', (callback)=>{
   return runSequence('clean-public',
-              ['html', 'styles', 'scripts', 'images'],
+              ['html', 'styles', 'vendors', 'scripts', 'images'],
               callback)
 });
 
@@ -107,6 +118,7 @@ gulp.task('browserSync', ()=> {
   gulp.watch('src/index.html').on('change', browserSync.reload);
   gulp.watch('src/scripts/**/*.js', ['scripts']);
   gulp.watch('src/assets/**/*', ['images']).on('change', browserSync.reload);
+  gulp.watch('src/scripts/vendors/*.js', ['vendors'])
 });
 
 gulp.task('default', ['build', 'browserSync']);
