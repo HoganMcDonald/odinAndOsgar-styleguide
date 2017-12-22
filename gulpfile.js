@@ -93,6 +93,11 @@ gulp.task('images', ()=> {
     .pipe(gulp.dest('public/assets'));
 });
 
+gulp.task('fonts', ()=> {
+  gulp.src('src/fonts/*')
+    .pipe(gulp.dest('public/fonts'))
+});
+
 gulp.task('clean-assets', ()=>{
   return del(['public/assets']);
 });
@@ -103,7 +108,7 @@ gulp.task('clean-public', ()=>{
 
 gulp.task('build', (callback)=>{
   return runSequence('clean-public',
-              ['html', 'styles', 'vendors', 'scripts', 'images'],
+              ['html', 'styles', 'fonts', 'vendors', 'scripts', 'images'],
               callback)
 });
 
