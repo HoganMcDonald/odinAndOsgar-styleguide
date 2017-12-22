@@ -13,13 +13,16 @@
     </header>
 
     <main>
-      <div class="sidePanel" ng-style="gradient">
+      <div class="sidePanel grad1" ng-class="'' + gradient" >
         <div class="section-container">
-          <h1 class="section" ng-repeat="section in sections" ng-click="setGradient(section)">{{section.title}}</h1>
+          <h1 class="section {{section.title}}" ng-repeat="section in sections" data="{{section.title}}" ng-click="setGradient(section)">{{section.title}}</h1>
         </div>
       </div>
-      <div class="styleContent">
 
+      <div class="styleContent">
+        <div class="contentWindow">
+
+        </div>
       </div>
     </main>
 

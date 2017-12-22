@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "angular": "^1.6.7",
+    "angular-animate": "^1.6.8",
     "jquery": "^3.2.1"
   }
 }

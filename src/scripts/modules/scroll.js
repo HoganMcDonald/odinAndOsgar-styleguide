@@ -35,8 +35,6 @@ $(document).ready(()=> {
     sectionContainer.css('top', `${sectionContainerT}vh`)
     sectionContainer.css('opacity', `${sectionContainerO}`)
 
-    console.log(sectionContainerO);
-
   });
 
 });

@@ -8,3 +8,21 @@ $text-grey: rgb(105, 105, 105)
 $text-grey-active: rgb(138, 138, 138)
 
 $content-background: rgb(223, 223, 223)
+
+.grad1-add, .grad1-remove, .grad2-add, .grad2-remove, .grad3-add, .grad3-remove, .grad4-add, .grad4-remove, .grad5-add, .grad5-remove
+  transition: background 1000ms linear
+
+.grad1, .grad1-add.grad1-add-active
+  background: linear-gradient(36deg, $color1, $color4)
+
+.grad2, .grad2-add.grad2-add-active
+  background: linear-gradient(36deg, $color4, $color3)
+
+.grad3, .grad3-add.grad3-add-active
+  background: linear-gradient(36deg, $color3, $color2)
+
+.grad4, .grad4-add.grad4-add-active
+  background: linear-gradient(36deg, $color2, $color5)
+
+.grad5, .grad5-add.grad5-add-active
+  background: linear-gradient(36deg, $color5, $color1)

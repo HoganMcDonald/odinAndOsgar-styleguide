@@ -8,28 +8,28 @@ var colors = {
 
 app.controller('mainController', ['$scope', function($scope) {
 
-  $scope.gradient = {};
+  $scope.gradient = 'grad1';
 
   $scope.sections = [
     {
       title: 'Logo',
-      gradient: {background: `linear-gradient(36deg, ${colors.color1}, ${colors.color4})`}
+      gradient: 'grad1'
     },
     {
       title: 'Typography',
-      gradient: {background: `linear-gradient(36deg, ${colors.color4}, ${colors.color3})`}
+      gradient: 'grad2'
     },
     {
       title: 'Color Palette',
-      gradient: {background: `linear-gradient(36deg, ${colors.color3}, ${colors.color2})`}
+      gradient: 'grad3'
     },
     {
       title: 'Imagery',
-      gradient: {background: `linear-gradient(36deg, ${colors.color2}, ${colors.color5})`}
+      gradient: 'grad4'
     },
     {
       title: 'Story',
-      gradient: {background: `linear-gradient(36deg, ${colors.color5}, ${colors.color1})`}
+      gradient: 'grad5'
     }
   ];
 
