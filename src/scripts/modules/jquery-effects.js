@@ -2,7 +2,7 @@ function calcRange(end, start, percent) {
   return (percent * 0.01) * (start - end) + end;
 }
 
-$(document).ready(()=> {
+$(document).ready(function() {
   // elements for scroll effects
   const logo = $('.logo');
   const sidePanel = $('.sidePanel');
@@ -10,6 +10,12 @@ $(document).ready(()=> {
 
   //height of the viewport
   const windowH = document.scrollingElement.scrollTopMax;
+
+  // gradient changes
+  $('.section').click( function() {
+    const top = $(this).index() * 100
+    $('.sidePanel').css('top', `-${top}vh`);
+  });
 
   // scroll effects
   $(window).on('scroll', ()=> {
