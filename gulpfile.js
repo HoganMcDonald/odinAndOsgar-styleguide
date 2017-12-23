@@ -1,30 +1,125 @@
-/*
-npm install gulp gulp-autoprefixer gulp-clean-css gulp-rename gulp-htmlmin browser-sync run-sequence gulp-sass del gulp-uglify gulp-imagemin gulp-concat npm install gulp-sourcemaps gulp-babel babel-preset-env babel-core --save-dev
-*/
+// npm install --save-dev gulp browser-sync gulp-nodemon del run-sequence gulp-htmlmin gulp-rename gulp-imagemin gulp-sourcemaps gulp-babel babel-preset-env babel-core gulp-uglify gulp-sass gulp-autoprefixer gulp-clean-css
+
+// settings
+const nodePort = 3000;
+const bsPort = 5000; // must be different from nodePort
+
+const srcDir = 'src'; // path from ./ where you write code (src)
+const destDir = 'public'; // final location from ./ where distribution files will go
+
+const scriptOrder = ['src/scripts/**/*.js'];
+const htmlOrder = ['src/views/**/*.html'];
+const styleOrder = ['src/sass/main.sass'];
+const vendorOrder = ['src/vendors/*.js'];
 
 // dependencies
 const gulp = require('gulp'),
   autoprefixer = require('gulp-autoprefixer'),
-  cleanCSS = require('gulp-clean-css'),
-  del = require('del'),
-  rename = require('gulp-rename'),
-  htmlmin = require('gulp-htmlmin'),
-  browserSync = require('browser-sync').create(),
-  runSequence = require('run-sequence'),
-  imagemin = require('gulp-imagemin'),
-  concat = require('gulp-concat'),
   babel = require('gulp-babel'),
+  browserSync = require('browser-sync'),
+  cleanCSS = require('gulp-clean-css'),
+  concat = require('gulp-concat'),
+  del = require('del'),
+  htmlmin = require('gulp-htmlmin'),
+  imagemin = require('gulp-imagemin'),
+  nodemon = require('gulp-nodemon'),
+  rename = require('gulp-rename'),
+  runSequence = require('run-sequence'),
+  sass = require('gulp-sass'),
   sourcemaps = require('gulp-sourcemaps'),
-  uglify = require('gulp-uglify'),
-  sass = require('gulp-sass');
+  uglify = require('gulp-uglify');
 
-/*
-compiles, minifies, autoprefixes, renames sass.
-also will pump to browsersync
-*/
+// tasks
+gulp.task('browser-sync', ['nodemon'], ()=> {
+  browserSync({
+    proxy: `localhost:${nodePort}`,
+    port: bsPort,
+    notify: true
+  });
+});
+
+gulp.task('build', (callback)=> {
+  return runSequence('clean:build',
+    ['vendors', 'scripts', 'html', 'styles', 'images', 'fonts'],
+    callback);
+});
+
+gulp.task('clean:assets', ()=> {
+  return del(`${destDir}/assets`);
+});
+
+gulp.task('clean:build', ()=>{
+  return del(destDir);
+});
+
+gulp.task('fonts', ()=> {
+  gulp.src(`${srcDir}/fonts/*`)
+    .pipe(gulp.dest(`${destDir}/fonts`))
+    .pipe(browserSync.reload({
+      stream: true
+    }));
+});
+
+gulp.task('html', ()=> {
+  gulp.src(htmlOrder)
+    .pipe(htmlmin({collapseWhitespace: true}))
+    .pipe(rename({
+      suffix: '.min'
+    }))
+    .pipe(gulp.dest(`${destDir}/views`))
+    .pipe(browserSync.reload({
+      stream: true
+    }));
+});
+
+gulp.task('images', ['clean:assets'], ()=> {
+  gulp.src(`${srcDir}/assets/**/*+(png|jpg|jpeg|gif|svg)`)
+    .pipe(imagemin())
+    .pipe(gulp.dest(`${destDir}/assets`))
+    .pipe(browserSync.reload({
+      stream: true
+    }));
+});
+
+gulp.task('nodemon', (cb)=> {
+  var called = false;
+  nodemon({
+    script: 'server.js',
+    ignore: [
+      'gulpfile.js',
+      'node_modules/'
+    ]
+  })
+  .on('start', ()=> {
+    if (!called) {
+      called = true;
+      cb();
+    }
+  })
+  .on('restart', ()=> {
+    setTimeout(()=> {
+      browserSync.reload();
+    }, 1000);
+  });
+});
+
+gulp.task('scripts', ()=> {
+  gulp.src(scriptOrder)
+    .pipe(sourcemaps.init())
+    .pipe(babel({
+      presets: ['env']
+    }))
+    .pipe(concat('bundle.min.js'))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(destDir))
+    .pipe(browserSync.reload({
+      stream: true
+    }));
+});
+
 gulp.task('styles', () => {
-  console.log('styles ran');
-  gulp.src('./src/sass/main.sass')
+  gulp.src(styleOrder)
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
       browsers: ['last 2 versions'],
@@ -36,94 +131,47 @@ gulp.task('styles', () => {
     .pipe(rename({
       suffix: '.min'
     }))
-    .pipe(gulp.dest('./public'))
+    .pipe(gulp.dest(`${destDir}/styles`))
     .pipe(browserSync.reload({
       stream: true
     }));
 });
-
-/*
-minifies, renames html.
-also will pump to browsersync
-*/
-gulp.task('html', ()=> {
-  console.log('html ran');
-  gulp.src(['./src/*.html'])
-    .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest('./public/'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-});
-
-gulp.task('scripts', ()=> {
-  return gulp.src(['src/scripts/main.js', 'src/scripts/modules/*.js'])
-    .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: ['env']
-    }))
-    .pipe(concat('bundle.min.js'))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./public'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-})
 
 gulp.task('vendors', ()=> {
-  return gulp.src(['src/scripts/vendors/*.js'])
+  gulp.src(`${srcDir}/vendors/*.js`)
     .pipe(concat('vendors.min.js'))
-    .pipe(gulp.dest('./public'))
+    .pipe(gulp.dest(`${destDir}`))
     .pipe(browserSync.reload({
       stream: true
     }));
-})
-
-/*
-compresses images.
-also will pump to browsersync
-*/
-gulp.task('images', ()=> {
-  gulp.src('src/assets/**/*+(png|jpg|jpeg|gif|svg)')
-    .pipe(imagemin())
-    .pipe(gulp.dest('public/assets'));
 });
 
-gulp.task('fonts', ()=> {
-  gulp.src('src/fonts/*')
-    .pipe(gulp.dest('public/fonts'))
+// watch
+gulp.task('watch:fonts', ()=> {
+  gulp.watch(`${srcDir}/fonts/*`, ['fonts']);
 });
 
-gulp.task('clean-assets', ()=>{
-  return del(['public/assets']);
+gulp.task('watch:html', ()=> {
+  gulp.watch(`${srcDir}/views/**/*.html`, ['html']);
 });
 
-gulp.task('clean-public', ()=>{
-  return del(['public']);
+gulp.task('watch:images', ()=> {
+  gulp.watch(`${srcDir}/assets/**/*`, ['images']);
 });
 
-gulp.task('build', (callback)=>{
-  return runSequence('clean-public',
-              ['html', 'styles', 'fonts', 'vendors', 'scripts', 'images'],
-              callback)
+gulp.task('watch:scripts', ()=> {
+  gulp.watch(`${srcDir}/scripts/**/*.js`, ['scripts']);
 });
 
-gulp.task('browserSync', ()=> {
-  browserSync.init({
-    server: {
-      baseDir: "./"
-    },
-    startPath: "./src/index.html"
-  });
-  gulp.watch('src/sass/*.sass', ['styles']);
-  gulp.watch('src/index.html').on('change', browserSync.reload);
-  gulp.watch('src/scripts/**/*.js', ['scripts']);
-  gulp.watch('src/assets/**/*', ['images']).on('change', browserSync.reload);
-  gulp.watch('src/scripts/vendors/*.js', ['vendors'])
+gulp.task('watch:styles', ()=> {
+  gulp.watch(`${srcDir}/sass/**/*.sass`, ['styles']);
 });
 
-gulp.task('default', ['build', 'browserSync']);
+gulp.task('watch:vendors', ()=> {
+  gulp.watch(`${srcDir}/vendors/*.js`, ['vendors'])
+});
+
+// default
+gulp.task('default', ['build', 'browser-sync'], (callback)=> {
+  return runSequence(['watch:fonts', 'watch:html', 'watch:images', 'watch:scripts', 'watch:styles', 'watch:vendors'], callback);
+});
