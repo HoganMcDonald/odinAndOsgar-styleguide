@@ -2,9 +2,9 @@
 @import vars
 
 @import header
+@import content
 
 body
-  font-family: 'Baron Neue'
   margin: none
   height: 200vh
 
@@ -32,26 +32,24 @@ main
       display: grid
       opacity: 0.75
       .section
+        align-self: center
+        justify-self: center
         color: white
-        font-family: 'Baron Neue', sans-serif
-        font-size: 2em
         font-weight: 400
         background-color: rgba(255, 255, 255, 0)
         outline: none
         border: none
         position: relative
-        text-align: center
         user-select: none
         transition: color 100ms
         &:after
           content: ''
-          width: 60px
+          width: 40px
           height: 4px
           background: white
           position: absolute
-          bottom: -8px
-          left: 50%
-          transform: translateX(-50%)
+          bottom: -10px
+          left: 0
         &:hover
           color: $text-grey-active
   .styleContent
@@ -67,3 +65,5 @@ main
     .contentWindow
       width: 80%
       height: 80%
+      overflow-y: scroll
+      overflow-x: hidden
