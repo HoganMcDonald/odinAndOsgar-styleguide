@@ -10,6 +10,25 @@ const logo = $('.logo');
 const sidePanel = $('.sidePanel');
 const sectionContainer = $('.section-container');
 
+/**********************************
+          even handlers
+**********************************/
+
+// section click handler
+function changeSection() {
+  const section = $(this);
+
+  const top = section.index() * 100
+  $('.sidePanel').css('top', `-${top}vh`);
+
+  const text = section.text().toLowerCase();
+  console.log(text);
+  $('.contentBlock').removeClass('displayContent');
+  $(`#${text}`).addClass('displayContent');
+
+}
+
+// scroll handler
 function scrollSet() {
   const bScroll = document.scrollingElement.scrollTop;
 
@@ -34,15 +53,12 @@ function scrollSet() {
   sectionContainer.css('opacity', `${sectionContainerO}`)
 }
 
-scrollSet();
+/**********************************
+          even listeners
+**********************************/
 
-// scroll effects
-$(window).on('scroll', ()=> {
-  scrollSet();
-});
+// scroll listener
+$(window).on('scroll', scrollSet());
 
-// gradient changes
-$('.section').click( function() {
-  const top = $(this).index() * 100
-  $('.sidePanel').css('top', `-${top}vh`);
-});
+// section listener
+$('.section').on('click', changeSection);
